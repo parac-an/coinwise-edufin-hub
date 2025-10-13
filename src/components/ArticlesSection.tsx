@@ -3,6 +3,8 @@ import ArticleCard from "./ArticleCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const ArticlesSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -10,50 +12,26 @@ const ArticlesSection = () => {
 
   const categories = ["Semua", "Budgeting", "Investasi", "Tabungan", "Pengelolaan Uang"];
 
-  const articles = [
-    {
-      title: "Cara Membuat Budget Bulanan yang Efektif",
-      description: "Pelajari langkah-langkah praktis untuk membuat budget bulanan yang sesuai dengan kondisi keuangan Anda. Termasuk tips alokasi dana untuk kebutuhan, tabungan, dan hiburan.",
-      category: "Budgeting",
-      date: "15 Januari 2025",
-      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80"
-    },
-    {
-      title: "Investasi untuk Pemula: Mulai dari Mana?",
-      description: "Panduan lengkap memulai investasi bagi pemula. Kenali berbagai instrumen investasi, risiko, dan strategi yang cocok untuk Anda.",
-      category: "Investasi",
-      date: "12 Januari 2025",
-      image: "https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?w=800&q=80"
-    },
-    {
-      title: "Menabung dengan Metode 50/30/20",
-      description: "Metode 50/30/20 adalah cara sederhana dan efektif untuk mengelola keuangan. Alokasikan 50% untuk kebutuhan, 30% untuk keinginan, dan 20% untuk tabungan.",
-      category: "Tabungan",
-      date: "10 Januari 2025",
-      image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80"
-    },
-    {
-      title: "Strategi Melunasi Hutang dengan Cepat",
-      description: "Tips dan trik untuk melunasi hutang secara efektif. Pelajari metode snowball dan avalanche untuk bebas dari hutang.",
-      category: "Pengelolaan Uang",
-      date: "8 Januari 2025",
-      image: "https://images.unsplash.com/photo-1633158829875-e5316a358c6f?w=800&q=80"
-    },
-    {
-      title: "Pentingnya Dana Darurat dan Cara Membangunnya",
-      description: "Dana darurat adalah pondasi keuangan yang kuat. Pelajari berapa jumlah ideal dan bagaimana cara mengumpulkannya dengan konsisten.",
-      category: "Tabungan",
-      date: "5 Januari 2025",
-      image: "https://images.unsplash.com/photo-1621981386829-9b458a2cddde?w=800&q=80"
-    },
-    {
-      title: "Memahami Saham: Risiko dan Keuntungan",
-      description: "Panduan komprehensif tentang investasi saham. Pelajari cara membaca laporan keuangan, analisis fundamental, dan teknikal.",
-      category: "Investasi",
-      date: "3 Januari 2025",
-      image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&q=80"
+  const { data: articles = [], isLoading } = useQuery({
+    queryKey: ["articles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .order("date", { ascending: false });
+      
+      if (error) throw error;
+      
+      return data.map((article) => ({
+        ...article,
+        date: new Date(article.date).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        })
+      }));
     }
-  ];
+  });
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -119,7 +97,13 @@ const ArticlesSection = () => {
           ))}
         </div>
 
-        {filteredArticles.length === 0 && (
+        {isLoading && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Memuat artikel...</p>
+          </div>
+        )}
+
+        {!isLoading && filteredArticles.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Tidak ada artikel yang sesuai dengan pencarian Anda.</p>
           </div>
