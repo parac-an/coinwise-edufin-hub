@@ -52,9 +52,7 @@ export type Database = {
           category: string
           created_at: string | null
           description: string
-          duration: string
           id: string
-          thumbnail: string
           title: string
           updated_at: string | null
           video_url: string
@@ -63,9 +61,7 @@ export type Database = {
           category: string
           created_at?: string | null
           description: string
-          duration: string
           id?: string
-          thumbnail: string
           title: string
           updated_at?: string | null
           video_url: string
@@ -74,9 +70,7 @@ export type Database = {
           category?: string
           created_at?: string | null
           description?: string
-          duration?: string
           id?: string
-          thumbnail?: string
           title?: string
           updated_at?: string | null
           video_url?: string

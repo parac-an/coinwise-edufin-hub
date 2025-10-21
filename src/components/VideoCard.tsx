@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { getYouTubeThumbnail } from "@/lib/youtube";
 
 interface VideoCardProps {
   title: string;
   description: string;
   category: string;
-  duration: string;
-  thumbnail: string;
   videoUrl: string;
 }
 
-const VideoCard = ({ title, description, category, duration, thumbnail, videoUrl }: VideoCardProps) => {
+const VideoCard = ({ title, description, category, videoUrl }: VideoCardProps) => {
+  const thumbnail = getYouTubeThumbnail(videoUrl);
   const handleShare = () => {
     const text = `Tonton video: ${title} di Coinwise`;
     const url = window.location.href;
@@ -52,9 +52,6 @@ const VideoCard = ({ title, description, category, duration, thumbnail, videoUrl
 
         <Badge className="absolute top-4 left-4 bg-primary/90 backdrop-blur-sm">
           {category}
-        </Badge>
-        <Badge className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm">
-          {duration}
         </Badge>
       </div>
 

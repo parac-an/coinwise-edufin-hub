@@ -23,8 +23,6 @@ const VideosSection = () => {
         title: video.title,
         description: video.description,
         category: video.category,
-        duration: video.duration,
-        thumbnail: video.thumbnail,
         videoUrl: video.video_url
       }));
     }
